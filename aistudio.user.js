@@ -64,7 +64,6 @@
                 text-align: start !important;
                 unicode-bidi: plaintext !important;
                 line-height: normal !important;
-                overflow: hidden !important;
             }
 
             textarea::placeholder {
