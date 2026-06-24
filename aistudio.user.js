@@ -21,6 +21,9 @@
 (function() {
     'use strict';
 
+    const TARGET_HINT = "Start typing a prompt to see what our models can do";
+    const NEW_HINT = "پرامپت خود را اینجا بنویسید...";
+
     const FONTS = {
         vazir: {
             name: 'Vazirmatn',
@@ -45,29 +48,29 @@
                 src: url('${font.url}') format('woff');
                 unicode-range: ${PERSIAN_UNICODE_RANGE};
                 font-display: swap;
-                size-adjust: 120%;
+                size-adjust: 100%;
             }
 
             @font-face {
                 font-family: 'AutoPersianChat';
                 src: url('${font.url}') format('woff');
                 font-display: swap;
-                size-adjust: 116%;
+                size-adjust: 110%;
             }
 
             * {
                 font-family: 'AutoPersian', Roboto, Arial, sans-serif !important;
             }
 
-            textarea {
+            ms-prompt-box {
                 font-family: 'AutoPersianChat', Roboto, Arial, sans-serif !important;
-                text-align: start !important;
-                unicode-bidi: plaintext !important;
-                line-height: normal !important;
+                direction: rtl !important;
+                text-align: right !important;
+                line-height: 1.7 !important;
             }
 
-            textarea::placeholder {
-                color: transparent !important;
+            .buttons-row {
+            direction: ltr !important;
             }
 
             ms-text-chunk,
@@ -98,6 +101,15 @@
                 font-family: 'Google Symbols' !important;
                 font-size: 20px !important;
             }
+
+            @keyframes placeholderDetector {
+                from { opacity: 0.99; }
+                to { opacity: 1; }
+            }
+
+            textarea[placeholder="${TARGET_HINT}"] {
+                animation: placeholderDetector 0.1s;
+            }
         `;
     }
 
@@ -114,6 +126,12 @@
 
         renderMenu(fontKey);
     }
+
+        document.addEventListener('animationstart', (event) => {
+        if (event.animationName === 'placeholderDetector') {
+            event.target.placeholder = NEW_HINT;
+        }
+    }, true);
 
     let menuIds = [];
     function renderMenu(currentFont) {
