@@ -69,6 +69,7 @@
                 line-height: 1.7 !important;
             }
 
+            .multi-media-row,
             .buttons-row {
             direction: ltr !important;
             }
