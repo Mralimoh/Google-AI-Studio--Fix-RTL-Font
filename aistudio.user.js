@@ -45,43 +45,38 @@
     function generateCSS(font) {
         return `
             @font-face {
-                font-family: 'CustomPersian';
+                font-family: 'Persian';
                 src: url('${font.url}') format('woff');
                 unicode-range: ${PERSIAN_UNICODE_RANGE};
                 font-display: swap;
-                size-adjust: 115%;
+                size-adjust: 110%;
+            }
+
+            @font-face {
+                font-family: 'PersianAll';
+                src: url('${font.url}') format('woff');
+                font-display: swap;
+                size-adjust: 110%;
             }
 
             * {
-                font-family: 'CustomPersian', Roboto, Arial, sans-serif !important;
+                font-family: 'Persian', Roboto, Arial, sans-serif !important;
             }
 
-            ms-prompt-box {
+            ms-prompt-box .textarea-row {
                 direction: rtl !important;
                 text-align: right !important;
             }
 
-            ms-prompt-box .multi-media-row,
-            ms-prompt-box .buttons-row {
-                direction: ltr !important;
-            }
-
-            ms-prompt-chunk,
-            ms-code-assistant-chat {
+            ms-prompt-chunk ms-cmark-node {
+                font-family: 'PersianAll', Roboto, Arial, sans-serif !important;
                 direction: rtl !important;
                 text-align: start !important;
                 unicode-bidi: plaintext !important;
             }
 
-            ms-prompt-chunk,
-            ms-prompt-chunk *,
-            ms-code-assistant-chat,
-            ms-code-assistant-chat * {
-                line-height: 1.7 !important;
-            }
-
-            ms-code-block,
-            ms-code-block * {
+            ms-prompt-chunk ms-code-block,
+            ms-prompt-chunk ms-code-block * {
                 direction: ltr !important;
                 text-align: left !important;
                 font-family: monospace !important;
