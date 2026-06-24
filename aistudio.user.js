@@ -24,6 +24,12 @@
     const TARGET_HINT = "Start typing a prompt to see what our models can do";
     const NEW_HINT = "پرامپت خود را اینجا بنویسید...";
 
+    const TARGET_APP_HINT = "Describe an app and let Gemini do the rest";
+    const NEW_APP_HINT = "اپلیکیشن خود را توصیف کنید...";
+
+    const TARGET_EDIT_HINT = "Make changes, add new features, ask for anything";
+    const NEW_EDIT_HINT = "تغییرات یا ویژگی‌های جدید...";
+
     const FONTS = {
         vazir: {
             name: 'Vazirmatn',
@@ -63,12 +69,15 @@
                 font-family: 'Persian', Roboto, Arial, sans-serif !important;
             }
 
-            ms-prompt-box .textarea-row {
+            ms-prompt-box .textarea-row,
+            ms-autocomplete-textarea .prompt-textarea,
+            .input-container textarea {
                 direction: rtl !important;
                 text-align: right !important;
             }
 
-            ms-prompt-chunk ms-cmark-node {
+            ms-prompt-chunk ms-cmark-node,
+            ms-console-turn ms-cmark-node {
                 font-family: 'PersianAll', Roboto, Arial, sans-serif !important;
                 direction: rtl !important;
                 text-align: start !important;
@@ -98,7 +107,9 @@
                 to { opacity: 1; }
             }
 
-            textarea[placeholder="${TARGET_HINT}"] {
+            textarea[placeholder="${TARGET_HINT}"],
+            textarea[placeholder="${TARGET_APP_HINT}"],
+            textarea[placeholder="${TARGET_EDIT_HINT}"] {
                 animation: placeholderDetector 0.1ms;
             }
         `;
@@ -136,7 +147,13 @@
 
     document.addEventListener('animationstart', (event) => {
         if (event.animationName === 'placeholderDetector') {
-            event.target.placeholder = NEW_HINT;
+            if (event.target.placeholder === TARGET_HINT) {
+                event.target.placeholder = NEW_HINT;
+            } else if (event.target.placeholder === TARGET_APP_HINT) {
+                event.target.placeholder = NEW_APP_HINT;
+            } else if (event.target.placeholder === TARGET_EDIT_HINT) {
+                event.target.placeholder = NEW_EDIT_HINT;
+            }
         }
     }, true);
 
