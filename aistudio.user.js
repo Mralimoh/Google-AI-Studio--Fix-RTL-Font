@@ -71,7 +71,8 @@
 
             ms-prompt-box .textarea-row,
             ms-autocomplete-textarea .prompt-textarea,
-            .input-container textarea {
+            ms-autosize-textarea .textarea,
+            ms-code-assistant-chat textarea {
                 direction: rtl !important;
                 text-align: right !important;
             }
