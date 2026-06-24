@@ -5,8 +5,8 @@
 // @description  Set Persian Font + Fix RTL.
 // @author       Mralimoh
 // @match        https://aistudio.google.com/*
-// @resource     VAZIR_FONT https://cdnjs.cloudflare.com/ajax/libs/vazir-font/30.1.0/Vazir-Light.woff
-// @resource     SHABNAM_FONT https://cdnjs.cloudflare.com/ajax/libs/shabnam-font/5.0.1/Shabnam-Light.woff
+// @resource     VAZIR_FONT https://cdnjs.cloudflare.com/ajax/libs/vazir-font/30.1.0/Vazir-Thin.woff
+// @resource     SHABNAM_FONT https://cdnjs.cloudflare.com/ajax/libs/shabnam-font/5.0.1/Shabnam-Thin.woff
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_getResourceURL
@@ -15,7 +15,7 @@
 // @grant        GM_addStyle
 // @run-at       document-start
 // @updateURL    https://github.com/Mralimoh/Google-AI-Studio--Fix-RTL-Font/raw/main/aistudio.user.js
-// @downloadURL  https://github.com/Mralimoh/Google-AI-Studio--Fix-RTL-FontE/raw/main/aistudio.user.js
+// @downloadURL  https://github.com/Mralimoh/Google-AI-Studio--Fix-RTL-Font/raw/main/aistudio.user.js
 // ==/UserScript==
 
 (function() {
@@ -35,58 +35,49 @@
         }
     };
 
+    const PERSIAN_UNICODE_RANGE = 'U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF';
+
     const activeFontKey = GM_getValue('SELECTED_FONT', 'shabnam');
     let activeFont = FONTS[activeFontKey] || FONTS.shabnam;
     let styleElement = null;
-
-    const PERSIAN_UNICODE_RANGE = 'U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF';
+    let menuIds = [];
 
     function generateCSS(font) {
         return `
             @font-face {
-                font-family: 'AutoPersian';
+                font-family: 'CustomPersian';
                 src: url('${font.url}') format('woff');
                 unicode-range: ${PERSIAN_UNICODE_RANGE};
                 font-display: swap;
-                size-adjust: 100%;
-            }
-
-            @font-face {
-                font-family: 'AutoPersianChat';
-                src: url('${font.url}') format('woff');
-                font-display: swap;
-                size-adjust: 110%;
+                size-adjust: 115%;
             }
 
             * {
-                font-family: 'AutoPersian', Roboto, Arial, sans-serif !important;
+                font-family: 'CustomPersian', Roboto, Arial, sans-serif !important;
             }
 
             ms-prompt-box {
-                font-family: 'AutoPersianChat', Roboto, Arial, sans-serif !important;
                 direction: rtl !important;
                 text-align: right !important;
-                line-height: 1.7 !important;
             }
 
-            .multi-media-row,
-            .buttons-row {
-            direction: ltr !important;
+            ms-prompt-box .multi-media-row,
+            ms-prompt-box .buttons-row {
+                direction: ltr !important;
             }
 
-            ms-text-chunk,
+            ms-prompt-chunk,
             ms-code-assistant-chat {
                 direction: rtl !important;
-                text-align: right !important;
+                text-align: start !important;
                 unicode-bidi: plaintext !important;
             }
 
-            ms-text-chunk,
-            ms-text-chunk *,
+            ms-prompt-chunk,
+            ms-prompt-chunk *,
             ms-code-assistant-chat,
             ms-code-assistant-chat * {
-                font-family: 'AutoPersianChat', Roboto, Arial, sans-serif !important;
-                line-height: 1.8 !important;
+                line-height: 1.7 !important;
             }
 
             ms-code-block,
@@ -94,13 +85,17 @@
                 direction: ltr !important;
                 text-align: left !important;
                 font-family: monospace !important;
-                font-size: 13px !important;
                 line-height: 1.2 !important;
+            }
+
+            ms-system-instructions-panel .subtitle,
+            ms-system-instructions textarea {
+                unicode-bidi: plaintext !important;
+                text-align: start !important;
             }
 
             .material-symbols-outlined {
                 font-family: 'Google Symbols' !important;
-                font-size: 20px !important;
             }
 
             @keyframes placeholderDetector {
@@ -109,7 +104,7 @@
             }
 
             textarea[placeholder="${TARGET_HINT}"] {
-                animation: placeholderDetector 0.1s;
+                animation: placeholderDetector 0.1ms;
             }
         `;
     }
@@ -117,6 +112,7 @@
     function applyFont(fontKey) {
         activeFont = FONTS[fontKey] || FONTS.shabnam;
         GM_setValue('SELECTED_FONT', fontKey);
+
         const css = generateCSS(activeFont);
 
         if (!styleElement) {
@@ -128,19 +124,26 @@
         renderMenu(fontKey);
     }
 
-        document.addEventListener('animationstart', (event) => {
+    function renderMenu(currentFont) {
+        menuIds.forEach((id) => GM_unregisterMenuCommand(id));
+        menuIds = [];
+
+        menuIds.push(GM_registerMenuCommand(
+            `${currentFont === 'shabnam' ? '✅ ' : ''}Shabnam`,
+            () => applyFont('shabnam')
+        ));
+
+        menuIds.push(GM_registerMenuCommand(
+            `${currentFont === 'vazir' ? '✅ ' : ''}Vazir`,
+            () => applyFont('vazir')
+        ));
+    }
+
+    document.addEventListener('animationstart', (event) => {
         if (event.animationName === 'placeholderDetector') {
             event.target.placeholder = NEW_HINT;
         }
     }, true);
-
-    let menuIds = [];
-    function renderMenu(currentFont) {
-        menuIds.forEach(id => GM_unregisterMenuCommand(id));
-        menuIds = [];
-        menuIds.push(GM_registerMenuCommand(`${currentFont === 'shabnam' ? '✅ ' : ''}Shabnam`, () => applyFont('shabnam')));
-        menuIds.push(GM_registerMenuCommand(`${currentFont === 'vazir' ? '✅ ' : ''}Vazir`, () => applyFont('vazir')));
-    }
 
     applyFont(activeFontKey);
 })();
