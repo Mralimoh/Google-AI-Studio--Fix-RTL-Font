@@ -13,8 +13,6 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @run-at       document-start
-// @updateURL    https://github.com/Mralimoh/Google-AI-Studio--Fix-RTL-Font/raw/main/aistudio.user.js
-// @downloadURL  https://github.com/Mralimoh/Google-AI-Studio--Fix-RTL-Font/raw/main/aistudio.user.js
 // ==/UserScript==
 
 (function() {
@@ -44,28 +42,21 @@
             .join(',\n');
 
         return `
-            :root {
-                --ai-persian-only-font: 'PersianOnly', Roboto, Arial, sans-serif;
-                --ai-persian-all-font: 'PersianAll', Roboto, Arial, sans-serif;
-            }
-
             @font-face {
-                font-family: 'PersianOnly';
+                font-family: 'Inter';
                 src: url('${font.url}') format('woff');
                 unicode-range: ${PERSIAN_UNICODE_RANGE};
-                font-display: swap;
+                font-display: block;
                 size-adjust: 114%;
+                font-weight: 100 900;
             }
 
             @font-face {
-                font-family: 'PersianAll';
+                font-family: 'Inter Tight';
                 src: url('${font.url}') format('woff');
-                font-display: swap;
+                font-display: block;
                 size-adjust: 114%;
-            }
-
-            * {
-                font-family: var(--ai-persian-only-font) !important;
+                font-weight: 100 900;
             }
 
             ms-prompt-box .textarea-row,
@@ -76,9 +67,9 @@
                 text-align: right !important;
             }
 
+            ms-prompt-chunk ms-text-chunk,
             ms-prompt-chunk ms-cmark-node,
             ms-console-turn ms-cmark-node {
-                font-family: var(--ai-persian-all-font) !important;
                 direction: rtl !important;
                 text-align: start !important;
                 unicode-bidi: plaintext !important;
@@ -89,7 +80,6 @@
             ms-prompt-chunk ms-code-block * {
                 direction: ltr !important;
                 text-align: left !important;
-                font-family: monospace !important;
                 line-height: 1.2 !important;
             }
 
@@ -97,10 +87,6 @@
             ms-system-instructions textarea {
                 unicode-bidi: plaintext !important;
                 text-align: start !important;
-            }
-
-            .material-symbols-outlined {
-                font-family: 'Google Symbols' !important;
             }
 
             @keyframes placeholderDetector {
@@ -143,4 +129,21 @@
     }, true);
 
     applyFont(activeFontKey);
+
+    document.addEventListener('click', function(event) {
+        const path = event.composedPath();
+        const anchor = path.find(el => el && el.tagName === 'A');
+        if (!anchor) return;
+        const href = anchor.href;
+        if (!href || !href.startsWith('https://www.google.com/url?')) return;
+        try {
+            const urlObj = new URL(href);
+            const target = urlObj.searchParams.get('q');
+            if (target) {
+                event.preventDefault();
+                window.open(target, '_blank', 'noopener,noreferrer');
+            }
+        } catch (e) {
+        }
+    }, true);
 })();
